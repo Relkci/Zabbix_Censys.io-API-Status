@@ -33,7 +33,7 @@ zabbix_export:
               uuid: 3f22c7229425411bb9f883a4ed7a3b7d
               expression: 'change(/Censys.io API Provider Status/censys.io.api.allowance)<>0'
               name: 'Censys.io API Allowance Changed'
-              opdata: /dev_censys.io/censys.io.api.allowance
+              opdata: censys.io.api.allowance
               priority: WARNING
         -
           uuid: bd2c4e9091084dff842e699f6b229db4
