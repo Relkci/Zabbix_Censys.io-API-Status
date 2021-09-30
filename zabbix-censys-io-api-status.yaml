@@ -1,0 +1,341 @@
+zabbix_export:
+  version: '5.4'
+  date: '2021-09-30T10:30:08Z'
+  groups:
+    -
+      uuid: c1042abaca9d435ca00326c24768d8b8
+      name: 'API Providers'
+  templates:
+    -
+      uuid: e1dc9ef1b3e94b5e83fc9d816fa72676
+      template: 'Censys.io API Provider Status'
+      name: 'Censys.io API Provider Status'
+      groups:
+        -
+          name: 'API Providers'
+      items:
+        -
+          uuid: 7159e855c0134a3d936c90e557c3c85b
+          name: 'Censys.io API Allowance'
+          type: DEPENDENT
+          key: censys.io.api.allowance
+          delay: '0'
+          units: Requests
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.quota.allowance
+          master_item:
+            key: censys.io.api.data
+          triggers:
+            -
+              uuid: 3f22c7229425411bb9f883a4ed7a3b7d
+              expression: 'change(/Censys.io API Provider Status/censys.io.api.allowance)<>0'
+              name: 'Censys.io API Allowance Changed'
+              opdata: /dev_censys.io/censys.io.api.allowance
+              priority: WARNING
+        -
+          uuid: bd2c4e9091084dff842e699f6b229db4
+          name: censys.io.api.data
+          type: HTTP_AGENT
+          key: censys.io.api.data
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$CENSYS_IO_API_ID}'
+          password: '{$CENSYS_IO_SECRET}'
+          url: 'https://search.censys.io/api/v1/account'
+        -
+          uuid: 19832bb8c9274f7c927c49191833294c
+          name: 'Censys.io Account Email'
+          type: DEPENDENT
+          key: censys.io.api.email
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.email
+          master_item:
+            key: censys.io.api.data
+        -
+          uuid: 14175f5e7ab644b2a1e5d2fba21dfc88
+          name: 'Censys.io Account Last Login'
+          type: DEPENDENT
+          key: censys.io.api.lastlogin
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.last_login
+          master_item:
+            key: censys.io.api.data
+        -
+          uuid: 9bbbd913f26a4782b56db5a54df18dbf
+          name: 'Censys.io API Next Reset'
+          type: DEPENDENT
+          key: censys.io.api.next-reset
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.quota.resets_at
+          master_item:
+            key: censys.io.api.data
+        -
+          uuid: 09ba5e8c5d784a60a6bf02862fdd4983
+          name: 'Censys.io API Requests Remaining'
+          type: CALCULATED
+          key: censys.io.api.remaining
+          units: Requests
+          params: 'last(//censys.io.api.allowance) - last(//censys.io.api.usage)'
+          triggers:
+            -
+              uuid: d0a432382b98477c981be494cb297c55
+              expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) < 1'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) > 0'
+              name: 'Censys.io API 0% Remaining Allowance'
+              opdata: censys.io.api.remaining
+              priority: HIGH
+              manual_close: 'YES'
+        -
+          uuid: 4e65e4a327954f3b98082ad59f67a7d7
+          name: 'Censys.io API Usage'
+          type: DEPENDENT
+          key: censys.io.api.usage
+          delay: '0'
+          units: Requests
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.quota.used
+          master_item:
+            key: censys.io.api.data
+        -
+          uuid: c01dc2c6e9484c2b830cef7a9133fa31
+          name: 'Censys.io API Requests Change'
+          type: DEPENDENT
+          key: censys.io.api.useage.change
+          delay: '0'
+          units: Requests
+          preprocessing:
+            -
+              type: SIMPLE_CHANGE
+              parameters:
+                - ''
+          master_item:
+            key: censys.io.api.usage
+        -
+          uuid: a1c1a8a3cf97452a9f280d3546d85d02
+          name: 'Censys.io Account Username'
+          type: DEPENDENT
+          key: censys.io.api.user
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.login
+          master_item:
+            key: censys.io.api.data
+      httptests:
+        -
+          uuid: c4b9cc4dfea6409c9c84a8a16606ca83
+          name: censys.io.api.http.response
+          authentication: BASIC
+          http_user: '{$CENSYS_IO_API_ID}'
+          http_password: '{$CENSYS_IO_SECRET}'
+          steps:
+            -
+              name: 'censys.io API Call'
+              url: 'https://search.censys.io/api/v1/account'
+              follow_redirects: 'NO'
+              status_codes: '200'
+      tags:
+        -
+          tag: API
+          value: Censys.io
+        -
+          tag: Application
+          value: 'API Provider'
+        -
+          tag: Application
+          value: Censys.io
+      macros:
+        -
+          macro: '{$CENSYS_IO_API_ID}'
+        -
+          macro: '{$CENSYS_IO_SECRET}'
+      dashboards:
+        -
+          uuid: ccf0ff92e0ab48f1b3c953714f8f1ea2
+          name: 'Censys.io API Provider Status'
+          pages:
+            -
+              widgets:
+                -
+                  type: PLAIN_TEXT
+                  width: '24'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: style
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show_as_html
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show_lines
+                      value: '8'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.lastlogin
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.user
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.allowance
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.next-reset
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.useage.change
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.remaining
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: censys.io.api.usage
+                        host: 'Censys.io API Provider Status'
+                    -
+                      type: ITEM
+                      name: itemids
+                      value:
+                        key: 'web.test.rspcode[censys.io.api.http.response,censys.io API Call]'
+                        host: 'Censys.io API Provider Status'
+                -
+                  type: GRAPH_CLASSIC
+                  'y': '3'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        name: 'Censys.io API Usage and  Remaining Allowance'
+                        host: 'Censys.io API Provider Status'
+                -
+                  type: GRAPH_CLASSIC
+                  'y': '8'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        name: 'Censys.io API Request Allowance'
+                        host: 'Censys.io API Provider Status'
+  triggers:
+    -
+      uuid: 8c17ce443e664ebdb38c89c7e0466af6
+      expression: 'last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])<>200'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])<>200'
+      name: 'Censys.io API - HTTP Response Failure'
+      opdata: 'Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call]'
+      priority: INFO
+    -
+      uuid: 0b433e12ca484ff589a09697c8d7cb19
+      expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) < last(/Censys.io API Provider Status/censys.io.api.allowance)*.10'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) > last(/Censys.io API Provider Status/censys.io.api.allowance)*.10'
+      name: 'Censys.io API 25% Remaining Allowance'
+      opdata: censys.io.api.remaining
+      priority: AVERAGE
+      manual_close: 'YES'
+    -
+      uuid: 01aab218787c4c8fa2379a1b96ce3ee9
+      expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) < last(/Censys.io API Provider Status/censys.io.api.allowance)*.25'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) > last(/Censys.io API Provider Status/censys.io.api.allowance)*.25'
+      name: 'Censys.io API 25% Remaining Allowance'
+      opdata: censys.io.api.remaining
+      priority: WARNING
+      manual_close: 'YES'
+    -
+      uuid: 0b115e0de9cc479084073662f2fa6f6c
+      expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) < last(/Censys.io API Provider Status/censys.io.api.allowance)*.5'
+      recovery_mode: RECOVERY_EXPRESSION
+      recovery_expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) > last(/Censys.io API Provider Status/censys.io.api.allowance)*.5'
+      name: 'Censys.io API 50% Remaining Allowance'
+      opdata: censys.io.api.remaining
+      priority: INFO
+      manual_close: 'YES'
+  graphs:
+    -
+      uuid: 035686ba80ee4e9e988402d2a238667f
+      name: 'Censys.io API Request Allowance'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Censys.io API Provider Status'
+            key: censys.io.api.allowance
+    -
+      uuid: a405cd6df461429fab6b6d44af2e7d22
+      name: 'Censys.io API Usage and  Remaining Allowance'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Censys.io API Provider Status'
+            key: censys.io.api.usage
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Censys.io API Provider Status'
+            key: censys.io.api.remaining
