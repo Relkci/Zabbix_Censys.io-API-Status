@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zabbix_export>
+	<version>5.4</version>
+	<date>2021-11-17T23:05:46Z</date>
+	<groups>
+		<group>
+			<uuid>c1042abaca9d435ca00326c24768d8b8</uuid>
+			<name>API Providers</name>
+		</group>
+	</groups>
+	<templates>
+		<template>
+			<uuid>e1dc9ef1b3e94b5e83fc9d816fa72676</uuid>
+			<template>Censys.io API Provider Status</template>
+			<name>Censys.io API Provider Status</name>
+			<groups>
+				<group>
+					<name>API Providers</name>
+				</group>
+			</groups>
+			<items>
+				<item>
+					<uuid>7159e855c0134a3d936c90e557c3c85b</uuid>
+					<name>Censys.io API Allowance</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.allowance</key>
+					<delay>0</delay>
+					<units>Requests</units>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.quota.allowance</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Allowance</value>
+						</tag>
+					</tags>
+					<triggers>
+						<trigger>
+							<uuid>3f22c7229425411bb9f883a4ed7a3b7d</uuid>
+							<expression>change(/Censys.io API Provider Status/censys.io.api.allowance)&lt;&gt;0</expression>
+							<name>Censys.io API Allowance Changed</name>
+							<opdata>censys.io.api.allowance</opdata>
+							<priority>WARNING</priority>
+						</trigger>
+					</triggers>
+				</item>
+				<item>
+					<uuid>bd2c4e9091084dff842e699f6b229db4</uuid>
+					<name>censys.io.api.data</name>
+					<type>HTTP_AGENT</type>
+					<key>censys.io.api.data</key>
+					<delay>5m</delay>
+					<history>1h</history>
+					<trends>0</trends>
+					<value_type>TEXT</value_type>
+					<authtype>BASIC</authtype>
+					<username>{$CENSYS_IO_API_ID}</username>
+					<password>{$CENSYS_IO_SECRET}</password>
+					<url>https://search.censys.io/api/v1/account</url>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>19832bb8c9274f7c927c49191833294c</uuid>
+					<name>Censys.io Account Email</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.email</key>
+					<delay>0</delay>
+					<trends>0</trends>
+					<value_type>TEXT</value_type>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.email</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Account</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>14175f5e7ab644b2a1e5d2fba21dfc88</uuid>
+					<name>Censys.io Account Last Login</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.lastlogin</key>
+					<delay>0</delay>
+					<trends>0</trends>
+					<value_type>TEXT</value_type>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.last_login</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Account</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>9bbbd913f26a4782b56db5a54df18dbf</uuid>
+					<name>Censys.io API Next Reset</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.next-reset</key>
+					<delay>0</delay>
+					<trends>0</trends>
+					<value_type>TEXT</value_type>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.quota.resets_at</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Account</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>09ba5e8c5d784a60a6bf02862fdd4983</uuid>
+					<name>Censys.io API Requests Remaining</name>
+					<type>CALCULATED</type>
+					<key>censys.io.api.remaining</key>
+					<units>Requests</units>
+					<params>last(//censys.io.api.allowance) - last(//censys.io.api.usage)</params>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Remaining</value>
+						</tag>
+					</tags>
+					<triggers>
+						<trigger>
+							<uuid>d0a432382b98477c981be494cb297c55</uuid>
+							<expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &lt; 1</expression>
+							<recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+							<recovery_expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &gt; 0</recovery_expression>
+							<name>Censys.io API 0% Remaining Allowance</name>
+							<opdata>censys.io.api.remaining</opdata>
+							<priority>HIGH</priority>
+							<manual_close>YES</manual_close>
+						</trigger>
+					</triggers>
+				</item>
+				<item>
+					<uuid>4e65e4a327954f3b98082ad59f67a7d7</uuid>
+					<name>Censys.io API Usage</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.usage</key>
+					<delay>0</delay>
+					<units>Requests</units>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.quota.used</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Used</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>c01dc2c6e9484c2b830cef7a9133fa31</uuid>
+					<name>Censys.io API Requests Change</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.useage.change</key>
+					<delay>0</delay>
+					<units>Requests</units>
+					<preprocessing>
+						<step>
+							<type>SIMPLE_CHANGE</type>
+							<parameters>
+								<parameter/>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.usage</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+					</tags>
+				</item>
+				<item>
+					<uuid>a1c1a8a3cf97452a9f280d3546d85d02</uuid>
+					<name>Censys.io Account Username</name>
+					<type>DEPENDENT</type>
+					<key>censys.io.api.user</key>
+					<delay>0</delay>
+					<trends>0</trends>
+					<value_type>TEXT</value_type>
+					<preprocessing>
+						<step>
+							<type>JSONPATH</type>
+							<parameters>
+								<parameter>$.login</parameter>
+							</parameters>
+						</step>
+					</preprocessing>
+					<master_item>
+						<key>censys.io.api.data</key>
+					</master_item>
+					<tags>
+						<tag>
+							<tag>Application</tag>
+							<value>Censys.io</value>
+						</tag>
+						<tag>
+							<tag>Censys.io</tag>
+							<value>Account</value>
+						</tag>
+					</tags>
+				</item>
+			</items>
+			<httptests>
+				<httptest>
+					<uuid>c4b9cc4dfea6409c9c84a8a16606ca83</uuid>
+					<name>censys.io.api.http.response</name>
+					<delay>5m</delay>
+					<authentication>BASIC</authentication>
+					<http_user>{$CENSYS_IO_API_ID}</http_user>
+					<http_password>{$CENSYS_IO_SECRET}</http_password>
+					<steps>
+						<step>
+							<name>censys.io API Call</name>
+							<url>https://search.censys.io/api/v1/account</url>
+							<follow_redirects>NO</follow_redirects>
+							<status_codes>200</status_codes>
+						</step>
+					</steps>
+				</httptest>
+			</httptests>
+			<tags>
+				<tag>
+					<tag>API</tag>
+					<value>Censys.io</value>
+				</tag>
+				<tag>
+					<tag>Application</tag>
+					<value>API Provider</value>
+				</tag>
+				<tag>
+					<tag>Application</tag>
+					<value>Censys.io</value>
+				</tag>
+			</tags>
+			<macros>
+				<macro>
+					<macro>{$CENSYS_IO_API_ID}</macro>
+				</macro>
+				<macro>
+					<macro>{$CENSYS_IO_SECRET}</macro>
+				</macro>
+			</macros>
+			<dashboards>
+				<dashboard>
+					<uuid>ccf0ff92e0ab48f1b3c953714f8f1ea2</uuid>
+					<name>Censys.io API Provider Status</name>
+					<pages>
+						<page>
+							<widgets>
+								<widget>
+									<type>PLAIN_TEXT</type>
+									<width>24</width>
+									<height>3</height>
+									<fields>
+										<field>
+											<type>INTEGER</type>
+											<name>style</name>
+											<value>1</value>
+										</field>
+										<field>
+											<type>INTEGER</type>
+											<name>show_as_html</name>
+											<value>1</value>
+										</field>
+										<field>
+											<type>INTEGER</type>
+											<name>show_lines</name>
+											<value>8</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.lastlogin</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.user</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.allowance</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.next-reset</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.useage.change</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.remaining</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>censys.io.api.usage</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+										<field>
+											<type>ITEM</type>
+											<name>itemids</name>
+											<value>
+												<key>web.test.rspcode[censys.io.api.http.response,censys.io API Call]</key>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+									</fields>
+								</widget>
+								<widget>
+									<type>GRAPH_CLASSIC</type>
+									<y>3</y>
+									<width>12</width>
+									<height>5</height>
+									<fields>
+										<field>
+											<type>GRAPH</type>
+											<name>graphid</name>
+											<value>
+												<name>Censys.io API Usage and  Remaining Allowance</name>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+									</fields>
+								</widget>
+								<widget>
+									<type>GRAPH_CLASSIC</type>
+									<y>8</y>
+									<width>12</width>
+									<height>5</height>
+									<fields>
+										<field>
+											<type>GRAPH</type>
+											<name>graphid</name>
+											<value>
+												<name>Censys.io API Request Allowance</name>
+												<host>Censys.io API Provider Status</host>
+											</value>
+										</field>
+									</fields>
+								</widget>
+							</widgets>
+						</page>
+					</pages>
+				</dashboard>
+			</dashboards>
+		</template>
+	</templates>
+	<triggers>
+		<trigger>
+			<uuid>8c17ce443e664ebdb38c89c7e0466af6</uuid>
+			<expression>last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])&lt;&gt;200</expression>
+			<recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+			<recovery_expression>last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])=200</recovery_expression>
+			<name>Censys.io API - HTTP Response Failure</name>
+			<opdata>Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call]</opdata>
+			<priority>WARNING</priority>
+		</trigger>
+		<trigger>
+			<uuid>0b433e12ca484ff589a09697c8d7cb19</uuid>
+			<expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &lt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.10</expression>
+			<recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+			<recovery_expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &gt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.10</recovery_expression>
+			<name>Censys.io API 25% Remaining Allowance</name>
+			<opdata>censys.io.api.remaining</opdata>
+			<priority>AVERAGE</priority>
+			<manual_close>YES</manual_close>
+		</trigger>
+		<trigger>
+			<uuid>01aab218787c4c8fa2379a1b96ce3ee9</uuid>
+			<expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &lt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.25</expression>
+			<recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+			<recovery_expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &gt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.25</recovery_expression>
+			<name>Censys.io API 25% Remaining Allowance</name>
+			<opdata>censys.io.api.remaining</opdata>
+			<priority>WARNING</priority>
+			<manual_close>YES</manual_close>
+		</trigger>
+		<trigger>
+			<uuid>0b115e0de9cc479084073662f2fa6f6c</uuid>
+			<expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &lt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.5</expression>
+			<recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+			<recovery_expression>last(/Censys.io API Provider Status/censys.io.api.remaining) &gt; last(/Censys.io API Provider Status/censys.io.api.allowance)*.5</recovery_expression>
+			<name>Censys.io API 50% Remaining Allowance</name>
+			<opdata>censys.io.api.remaining</opdata>
+			<priority>INFO</priority>
+			<manual_close>YES</manual_close>
+		</trigger>
+	</triggers>
+	<graphs>
+		<graph>
+			<uuid>035686ba80ee4e9e988402d2a238667f</uuid>
+			<name>Censys.io API Request Allowance</name>
+			<graph_items>
+				<graph_item>
+					<sortorder>1</sortorder>
+					<color>1A7C11</color>
+					<item>
+						<host>Censys.io API Provider Status</host>
+						<key>censys.io.api.allowance</key>
+					</item>
+				</graph_item>
+			</graph_items>
+		</graph>
+		<graph>
+			<uuid>a405cd6df461429fab6b6d44af2e7d22</uuid>
+			<name>Censys.io API Usage and  Remaining Allowance</name>
+			<graph_items>
+				<graph_item>
+					<sortorder>1</sortorder>
+					<color>1A7C11</color>
+					<item>
+						<host>Censys.io API Provider Status</host>
+						<key>censys.io.api.usage</key>
+					</item>
+				</graph_item>
+				<graph_item>
+					<sortorder>2</sortorder>
+					<color>F63100</color>
+					<item>
+						<host>Censys.io API Provider Status</host>
+						<key>censys.io.api.remaining</key>
+					</item>
+				</graph_item>
+			</graph_items>
+		</graph>
+	</graphs>
+</zabbix_export>

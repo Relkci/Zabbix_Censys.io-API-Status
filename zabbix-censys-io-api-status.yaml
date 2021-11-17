@@ -1,6 +1,6 @@
 zabbix_export:
   version: '5.4'
-  date: '2021-09-30T10:30:08Z'
+  date: '2021-11-17T23:05:19Z'
   groups:
     -
       uuid: c1042abaca9d435ca00326c24768d8b8
@@ -28,6 +28,13 @@ zabbix_export:
                 - $.quota.allowance
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Allowance
           triggers:
             -
               uuid: 3f22c7229425411bb9f883a4ed7a3b7d
@@ -40,6 +47,7 @@ zabbix_export:
           name: censys.io.api.data
           type: HTTP_AGENT
           key: censys.io.api.data
+          delay: 5m
           history: 1h
           trends: '0'
           value_type: TEXT
@@ -47,6 +55,10 @@ zabbix_export:
           username: '{$CENSYS_IO_API_ID}'
           password: '{$CENSYS_IO_SECRET}'
           url: 'https://search.censys.io/api/v1/account'
+          tags:
+            -
+              tag: Application
+              value: Censys.io
         -
           uuid: 19832bb8c9274f7c927c49191833294c
           name: 'Censys.io Account Email'
@@ -62,6 +74,13 @@ zabbix_export:
                 - $.email
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Account
         -
           uuid: 14175f5e7ab644b2a1e5d2fba21dfc88
           name: 'Censys.io Account Last Login'
@@ -77,6 +96,13 @@ zabbix_export:
                 - $.last_login
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Account
         -
           uuid: 9bbbd913f26a4782b56db5a54df18dbf
           name: 'Censys.io API Next Reset'
@@ -92,6 +118,13 @@ zabbix_export:
                 - $.quota.resets_at
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Account
         -
           uuid: 09ba5e8c5d784a60a6bf02862fdd4983
           name: 'Censys.io API Requests Remaining'
@@ -99,6 +132,13 @@ zabbix_export:
           key: censys.io.api.remaining
           units: Requests
           params: 'last(//censys.io.api.allowance) - last(//censys.io.api.usage)'
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Remaining
           triggers:
             -
               uuid: d0a432382b98477c981be494cb297c55
@@ -123,6 +163,13 @@ zabbix_export:
                 - $.quota.used
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Used
         -
           uuid: c01dc2c6e9484c2b830cef7a9133fa31
           name: 'Censys.io API Requests Change'
@@ -137,6 +184,10 @@ zabbix_export:
                 - ''
           master_item:
             key: censys.io.api.usage
+          tags:
+            -
+              tag: Application
+              value: Censys.io
         -
           uuid: a1c1a8a3cf97452a9f280d3546d85d02
           name: 'Censys.io Account Username'
@@ -152,10 +203,18 @@ zabbix_export:
                 - $.login
           master_item:
             key: censys.io.api.data
+          tags:
+            -
+              tag: Application
+              value: Censys.io
+            -
+              tag: Censys.io
+              value: Account
       httptests:
         -
           uuid: c4b9cc4dfea6409c9c84a8a16606ca83
           name: censys.io.api.http.response
+          delay: 5m
           authentication: BASIC
           http_user: '{$CENSYS_IO_API_ID}'
           http_password: '{$CENSYS_IO_SECRET}'
@@ -281,10 +340,10 @@ zabbix_export:
       uuid: 8c17ce443e664ebdb38c89c7e0466af6
       expression: 'last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])<>200'
       recovery_mode: RECOVERY_EXPRESSION
-      recovery_expression: 'last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])<>200'
+      recovery_expression: 'last(/Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call])=200'
       name: 'Censys.io API - HTTP Response Failure'
       opdata: 'Censys.io API Provider Status/web.test.rspcode[censys.io.api.http.response,censys.io API Call]'
-      priority: INFO
+      priority: WARNING
     -
       uuid: 0b433e12ca484ff589a09697c8d7cb19
       expression: 'last(/Censys.io API Provider Status/censys.io.api.remaining) < last(/Censys.io API Provider Status/censys.io.api.allowance)*.10'
